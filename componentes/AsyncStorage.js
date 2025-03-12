@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Produto from './produto';
+import ListaRegistros from './ListaRegistros';
 
 export default function Storage() {
     const [registros, setRegistros] = useState([]);
@@ -36,6 +37,30 @@ export default function Storage() {
         }
     };
 
+    const apagarNoAsyncStorage = async() => {
+        try{
+            await AsyncStorage.clear();
+            Alert.alert('Sucesso', 'Todos os dados foram removidos!');
+            carregarRegistros();
+        } catch (error) {
+            Alert.alert('Erro', 'Erro ao limpar os dados');
+        }
+    };
+    
+    const apagarRegistroEspecifico = async (index) => {
+        try{
+            const registrosExistente = [...registros];
+            registrosExistente.splice(index, 1); //Remove o item pelo índice
+
+            await AsyncStorage.setItem('registro', JSON.stringify(registrosExistente));
+            setRegistros(registrosExistente); //Atualiza o estado local
+            Alert.alert('Sucesso', 'Registro apagado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao apagar o registro', error);
+            Alert.alert('Erro', 'Ocorreu um erro ao apagar o registro.')
+        }
+    };
+
     useEffect(() => {
         carregarRegistros();
     }, []);
@@ -43,10 +68,15 @@ export default function Storage() {
     return (
         <View style={styles.container}>
             {telaAtual === 'produto' ? (
-                <Produto onSalvarDados={salvarNoAsyncStorage} setTelaAtual={setTelaAtual} />
+                <Produto onSalvarDados={salvarNoAsyncStorage} setTelaAtual={setTelaAtual} onApagarDados={apagarNoAsyncStorage} />
             ) : (
                 <>
                     <Text style={styles.titulo}>Registros Salvos:</Text>
+                    <ListaRegistros propRegistro={registros}
+                    onApagar={apagarRegistroEspecifico} />
+                    <Button
+                        title='Voltar para o cadastro'
+                        onPress={() => setTelaAtual('produto')}></Button>
                     <FlatList 
                         data={registros}
                         keyExtractor={(item, index) => index.toString()}

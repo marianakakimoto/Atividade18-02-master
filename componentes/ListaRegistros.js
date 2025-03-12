@@ -1,35 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ListaRegistros from './ListaRegistros';
+import React from "react";
+import { View, Text, Button, StyleSheet, FlatList } from "react-native";
 
-const MeuComponente = () => {
-  const [dados, setDados] = useState([]);
-
-  useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        const registrosSalvos = await AsyncStorage.getItem('registros');
-        if (registrosSalvos) {
-          setDados(JSON.parse(registrosSalvos));
-        }
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      }
-    };
-
-    carregarDados();
-  }, []);
-
+export default function ListaRegistros({ propRegistro, onApagar }) {
   return (
-    <View>
-      {dados.length > 0 ? (
-        <ListaRegistros data={dados} />
-      ) : (
-        <Text>Nenhum registro encontrado</Text>
+    <FlatList
+      data={propRegistro}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item, index }) => (
+        <View style={styles.item}>
+          <Text>Quantidade: {item.qtd}</Text>
+          <Text>Produto: {item.produto}</Text>
+          <Text>Valor: {item.valor}</Text>
+          <Button
+            title="Apagar"
+            onPress={() => onApagar(index)}
+          />
+        </View>
       )}
-    </View>
+    />
   );
-};
+}
 
-export default MeuComponente;
+const styles = StyleSheet.create({
+  item: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+});

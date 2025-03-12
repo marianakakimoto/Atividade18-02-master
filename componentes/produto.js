@@ -4,7 +4,7 @@ import { TextInputMask } from 'react-native-masked-text';
 import { Alert } from 'react-native';
 
 
-export default function Produto({ onSalvarDados, setTelaAtual }) {
+export default function Produto({ onSalvarDados, setTelaAtual, telaAtual, onApagarDados }) {
 
     const [qtd, setQtd] = useState('');
     const [produto, setProduto] = useState('');
@@ -22,6 +22,10 @@ export default function Produto({ onSalvarDados, setTelaAtual }) {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.')
         }
     };
+
+    const handleApagar = () => {
+        onApagarDados();
+    }
 
     
 
@@ -81,6 +85,11 @@ export default function Produto({ onSalvarDados, setTelaAtual }) {
                     <Button title='Ver Registros Salvos'
                     onPress={() => setTelaAtual('registros')}
                     ></Button>
+                </View>
+            </View>
+            <View srtle={estilos.inputRow}>
+                <View style={[estilos.botao, {margin: 10}]}>
+                    <Button title='Apagar' onPress={handleApagar}></Button>
                 </View>
             </View>
         </View>
